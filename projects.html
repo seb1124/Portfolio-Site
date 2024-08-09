@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hector's Portfolio</title>
     <link rel = "stylesheet" href = "./styles.css">
+    <link rel="icon" href = "./favicon.png" type = "image/png">
 </head>
 <body>
     <div class = "nav-container">
@@ -16,7 +17,39 @@
     <div id = "projects-container">
         <h1>Projects</h1>
         <hr>
-        <h2>Nothing yet...</h2>
+        <div id="repos"></div>
+
+<script>
+  const username = 'seb1124';
+  const apiUrl = `https://api.github.com/users/seb1124/repos`;
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      const repoContainer = document.getElementById('repos');
+      data.forEach(repo => {
+        const repoElement = document.createElement('div');
+        repoElement.className = 'repo-card';
+
+        // Fetch languages for each repo
+        fetch(repo.languages_url)
+          .then(response => response.json())
+          .then(languages => {
+            const languagesList = Object.keys(languages).join(', ');
+
+            repoElement.innerHTML = `
+              <h3><a href="${repo.html_url}">${repo.name}</a></h3>
+              <p>${repo.description || 'No description available'}</p>
+              <p style = "font-size: 0.7rem; color: #939185;">${languagesList}</p>
+              <hr>
+            `;
+            repoContainer.appendChild(repoElement);
+          })
+          .catch(error => console.error('Error fetching languages:', error));
+      });
+    })
+    .catch(error => console.error('Error fetching repos:', error));
+</script>
     </div>
 </body>
 </html>
